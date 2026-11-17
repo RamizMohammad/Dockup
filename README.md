@@ -1,4 +1,4 @@
-<p align="center"><img src="branding/dockup-logo-light.svg" alt="Dockup" height="64"></p>
+<p align="center"><img src="branding/dockup-logo-dark.svg" alt="Dockup" height="64"></p>
 
 # Dockup
 
