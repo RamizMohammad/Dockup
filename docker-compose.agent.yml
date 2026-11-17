@@ -1,0 +1,15 @@
+# Agent for another server:  DOCKUP_HUB=https://deploy.example.com DOCKUP_TOKEN=dks_... docker compose -f docker-compose.agent.yml up -d
+services:
+  dockup-agent:
+    image: dockup:latest
+    container_name: dockup-agent
+    restart: unless-stopped
+    command: ["agent"]
+    environment:
+      DOCKUP_HUB: ${DOCKUP_HUB:?set DOCKUP_HUB}
+      DOCKUP_TOKEN: ${DOCKUP_TOKEN:?set DOCKUP_TOKEN}
+      DOCKUP_DATA: /var/lib/dockup-agent
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /var/lib/dockup-agent:/var/lib/dockup-agent   # same path inside and out
+      - /opt/stacks:/opt/stacks

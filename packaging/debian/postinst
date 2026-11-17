@@ -1,0 +1,39 @@
+#!/bin/sh
+set -e
+if [ "$1" = "configure" ]; then
+  # carry data over from the pre-rename "deployhub" package (users, projects, secrets, logs)
+  for pair in "deployhub:dockup" "deployhub-agent:dockup-agent"; do
+    old="/var/lib/${pair%%:*}"; new="/var/lib/${pair##*:}"
+    if [ -d "$old" ] && [ ! -e "$new" ]; then
+      cp -a "$old" "$new" && echo "Dockup: migrated $old to $new (the old directory is kept; remove it when you are happy)"
+    fi
+  done
+  if [ -f /etc/deployhub/deployhub.env ]; then
+    echo "Dockup: still reading /etc/deployhub/deployhub.env; move your settings to /etc/dockup/dockup.env when convenient"
+  fi
+  if grep -q '^DEPLOYHUB_TOKEN=..' /etc/deployhub/agent.env 2>/dev/null; then
+    echo "Dockup: this host was a DeployHub agent. Switch it over with:"
+    echo "        systemctl disable --now dockup && systemctl enable --now dockup-agent"
+  fi
+  install -d -m 0750 /var/lib/dockup /var/lib/dockup-agent
+  chmod 0600 /etc/dockup/dockup.env /etc/dockup/agent.env 2>/dev/null || true
+  if [ -d /run/systemd/system ]; then
+    systemctl daemon-reload || true
+    if [ -z "$2" ]; then
+      # fresh install: start the hub; the agent needs a token first, so it stays disabled
+      systemctl enable dockup.service >/dev/null 2>&1 || true
+      systemctl start dockup.service || true
+    else
+      systemctl try-restart dockup.service dockup-agent.service || true
+    fi
+  fi
+  if [ -z "$2" ]; then
+    echo "Dockup installed. Hub UI: http://<this-host>:8080  (config: /etc/dockup/dockup.env)"
+    for i in 1 2 3 4 5 6 7 8 9 10; do [ -f /var/lib/dockup/setup-code ] && break; sleep 0.5; done
+    if [ -f /var/lib/dockup/setup-code ]; then
+      echo "First-run setup code: $(cat /var/lib/dockup/setup-code)  (needed to create the first admin)"
+    fi
+    echo "To run as an agent instead: edit /etc/dockup/agent.env, then: systemctl enable --now dockup-agent"
+  fi
+fi
+exit 0

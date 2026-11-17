@@ -1,0 +1,40 @@
+# Hub:  docker compose up -d     then open http://localhost:8100
+# First run: the one-time setup code is printed by `docker logs dockup`
+# (and stored in /var/lib/dockup/setup-code).
+# The hub controls the host's Docker through the socket (root-equivalent access).
+#
+# IMPORTANT: the data dir and your stacks dir are bind-mounted at the SAME path inside and
+# outside the container. `docker compose` resolves relative bind mounts against paths the
+# *host* daemon must also see, so the paths have to match.
+services:
+  dockup:
+    image: dockup:latest
+    build: .
+    container_name: dockup
+    restart: unless-stopped
+    ports:
+      - "8100:8100"
+    environment:
+      DOCKUP_DATA: /var/lib/dockup
+      # DOCKUP_URL: https://deploy.example.com     # needed for OAuth
+      # DOCKUP_TRUST_PROXY: "1"                    # behind nginx/Caddy/Traefik
+      # DOCKUP_ADMIN_USER: admin
+      # DOCKUP_ADMIN_PASSWORD: change-me-please
+      # DOCKUP_ADMIN_EMAIL: you@example.com       # invite an SSO admin instead
+      # DOCKUP_GITHUB_CLIENT_ID: ""
+      # DOCKUP_GITHUB_CLIENT_SECRET: ""
+      # DOCKUP_GOOGLE_CLIENT_ID: ""
+      # DOCKUP_GOOGLE_CLIENT_SECRET: ""
+      # DOCKUP_OIDC_ISSUER: https://sso.example.com/realms/main
+      # DOCKUP_OIDC_CLIENT_ID: ""
+      # DOCKUP_OIDC_CLIENT_SECRET: ""
+    # Or keep secrets out of this file:  env_file: [dockup.env]
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /var/lib/dockup:/var/lib/dockup
+      - /opt/stacks:/opt/stacks            # where your compose projects live (path mode)
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:8100/healthz"]
+      interval: 30s
+      timeout: 3s
+      retries: 3

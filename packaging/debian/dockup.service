@@ -1,0 +1,24 @@
+[Unit]
+Description=Dockup hub (web UI and API)
+Documentation=https://github.com/RamizMohammad/dockup
+After=network-online.target docker.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+Environment=DOCKUP_DATA=/var/lib/dockup
+# settings from the pre-rename package are honoured; /etc/dockup wins when both set a value
+EnvironmentFile=-/etc/deployhub/deployhub.env
+EnvironmentFile=-/etc/dockup/dockup.env
+ExecStart=/usr/bin/dockup serve
+Restart=always
+RestartSec=3
+TimeoutStopSec=20
+# Runs as root because it drives the local Docker daemon (equivalent to root access).
+User=root
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

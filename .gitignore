@@ -1,0 +1,4 @@
+dist/
+data/
+agent-data/
+*.test

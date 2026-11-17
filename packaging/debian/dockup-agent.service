@@ -1,0 +1,22 @@
+[Unit]
+Description=Dockup agent (connects to a hub, runs deployments on this host)
+Documentation=https://github.com/RamizMohammad/dockup
+After=network-online.target docker.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+Environment=DOCKUP_DATA=/var/lib/dockup-agent
+EnvironmentFile=-/etc/deployhub/agent.env
+EnvironmentFile=-/etc/dockup/agent.env
+ExecStart=/usr/bin/dockup agent
+Restart=always
+RestartSec=3
+TimeoutStopSec=20
+User=root
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target
