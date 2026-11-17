@@ -1388,7 +1388,7 @@ async function pageEdit(id) {
 // =====================================================================
 function installCommands(hub, tok) {
   return {
-    docker: `docker run -d --name dockup-agent --restart unless-stopped \\\n  -v /var/run/docker.sock:/var/run/docker.sock \\\n  -v /var/lib/dockup-agent:/var/lib/dockup-agent \\\n  -v /opt/stacks:/opt/stacks \\\n  -e DOCKUP_HUB="${hub}" \\\n  -e DOCKUP_TOKEN="${tok}" \\\n  dockup:latest agent`,
+    docker: `docker run -d --name dockup-agent --restart unless-stopped \\\n  -v /var/run/docker.sock:/var/run/docker.sock \\\n  -v /var/lib/dockup-agent:/var/lib/dockup-agent \\\n  -v /opt/stacks:/opt/stacks \\\n  -e DOCKUP_HUB="${hub}" \\\n  -e DOCKUP_TOKEN="${tok}" \\\n  -e DOCKUP_DATA=/var/lib/dockup-agent \\\n  ramizmohammad/dockup:latest agent`,
     apt: `sudo apt install ./dockup_${boot.version}_amd64.deb   # or _arm64\nsudo tee /etc/dockup/agent.env >/dev/null <<'EOF'\nDOCKUP_HUB=${hub}\nDOCKUP_TOKEN=${tok}\nEOF\nsudo systemctl disable --now dockup      # this machine is only an agent\nsudo systemctl enable --now dockup-agent`,
     binary: `DOCKUP_HUB="${hub}" DOCKUP_TOKEN="${tok}" \\\n  DOCKUP_DATA=/var/lib/dockup-agent ./dockup agent`,
   };

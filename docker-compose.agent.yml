@@ -1,7 +1,9 @@
-# Agent for another server:  DOCKUP_HUB=https://deploy.example.com DOCKUP_TOKEN=dks_... docker compose -f docker-compose.agent.yml up -d
+# Agent for another server (image: https://hub.docker.com/r/ramizmohammad/dockup):
+#   DOCKUP_HUB=https://deploy.example.com DOCKUP_TOKEN=dks_... docker compose -f docker-compose.agent.yml up -d
+# Update:  docker compose -f docker-compose.agent.yml pull && docker compose -f docker-compose.agent.yml up -d
 services:
   dockup-agent:
-    image: dockup:latest
+    image: ramizmohammad/dockup:latest      # use the same version as the hub
     container_name: dockup-agent
     restart: unless-stopped
     command: ["agent"]

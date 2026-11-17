@@ -81,7 +81,8 @@ output line; consistent ports (Docker: 8100, .deb: 8080, change with DOCKUP_ADDR
 ### Docker (hub)
 
 ```bash
-docker compose up -d --build        # http://localhost:8100
+docker compose pull                 # ramizmohammad/dockup from Docker Hub
+docker compose up -d                # http://localhost:8100
 docker logs dockup               # shows the one-time setup code for the first admin
 ```
 

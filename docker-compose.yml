@@ -1,4 +1,6 @@
-# Hub:  docker compose up -d     then open http://localhost:8100
+# Hub:  docker compose pull && docker compose up -d     then open http://localhost:8100
+# Image: https://hub.docker.com/r/ramizmohammad/dockup
+# Update later with the same two commands (pull the new image, recreate the container).
 # First run: the one-time setup code is printed by `docker logs dockup`
 # (and stored in /var/lib/dockup/setup-code).
 # The hub controls the host's Docker through the socket (root-equivalent access).
@@ -8,8 +10,8 @@
 # *host* daemon must also see, so the paths have to match.
 services:
   dockup:
-    image: dockup:latest
-    build: .
+    image: ramizmohammad/dockup:latest      # pin a version (e.g. :0.3.0) for production
+    # To run a local build instead:  docker build -t ramizmohammad/dockup:latest .
     container_name: dockup
     restart: unless-stopped
     ports:
